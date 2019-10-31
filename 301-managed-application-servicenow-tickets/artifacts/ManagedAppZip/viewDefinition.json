@@ -11,13 +11,17 @@
             "kind": "CustomResources",
             "properties": {
                 "displayName": "Tickets",
-                "version": "1.0.0.0",
+                "version": "1.0.0",
                 "resourceType": "tickets",
                 "createUIDefinition": null,
                 "columns": [
                     {
                         "key": "properties.displayName",
                         "displayName": "Name"
+                    },
+                    {
+                        "key": "properties.category",
+                        "displayName": "Category"
                     },
                     {
                         "key": "properties.description",
@@ -49,6 +53,14 @@
                         "optional": true
                     }
                 ]
+            }
+        },
+        {
+            "kind": "CustomMarkdown",
+            "properties": {
+                "displayName": "About Service Now",
+                "version": "1.0.0",
+                "content": "# Service Now\nGo to Service Now [homepage](https://www.servicenow.com/) and read about **what's new** and **how to start**.\n## Useful links:\n * [Service Now documentation](https://docs.servicenow.com/)\n * [Service Now developers page](https://developer.servicenow.com/)\n"
             }
         }
     ]

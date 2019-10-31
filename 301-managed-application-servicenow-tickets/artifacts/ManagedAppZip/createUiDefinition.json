@@ -2,6 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
     "handler": "Microsoft.Azure.CreateUIDef",
     "version": "0.1.2-preview",
+    "resourceTypes": [
+        "Microsoft.Web/connections",
+        "Microsoft.Logic/workflows",
+        "Microsoft.CustomProviders/resourceProviders"
+    ],
     "parameters": {
         "basics": [],
         "steps": [
