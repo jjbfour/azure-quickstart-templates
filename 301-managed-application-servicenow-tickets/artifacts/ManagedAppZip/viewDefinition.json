@@ -15,8 +15,9 @@
                 "resourceType": "tickets",
                 "commands": [
                     {
-                        "displayName": "Mark ticket as done",
-                        "path": "updateStatus"
+                        "displayName": "Mark as done",
+                        "path": "updateStatus",
+                        "icon": "Check"
                     }
                 ],
                 "createUIDefinition": {
