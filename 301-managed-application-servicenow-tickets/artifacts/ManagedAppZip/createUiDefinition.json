@@ -70,7 +70,10 @@
             "serviceNowInstance": "[steps('serviceNow').serviceNowInstance]",
             "serviceNowUserName": "[steps('serviceNow').serviceNowUserName]",
             "serviceNowPassword": "[steps('serviceNow').serviceNowPassword]",
-            "location": "[location()]"
+            "location": "[location()]",
+            "managedIdentity": {
+                "type": "systemAssigned"
+            }
         }
     }
 }
