@@ -167,7 +167,7 @@
         {
             "kind": "CustomMarkdown",
             "properties": {
-                "displayName": "About Service Now",
+                "displayName": "Learn more",
                 "version": "1.0.0",
                 "content": "# Managed application with Service Now\nThis managed application shows an integration with Service Now tickets. When you onboard resources, the Service Now ticket will be created for each resources added to your managed resource group. You can also view existing Service Now tickets.\n\n### Learn more about Service Now - **what's new** and **how to start**:\n * [Service Now homepage](https://www.servicenow.com/)\n * [Service Now documentation](https://docs.servicenow.com/)\n * [Service Now developers page](https://developer.servicenow.com/)\n\n### Learn more about Azure Managed Applications an Azure Custom Providers:\n\n * [Managed applications overview](https://docs.microsoft.com/en-us/azure/managed-applications/overview)\n * [Custom providers overview](https://docs.microsoft.com/en-us/azure/managed-applications/custom-providers-overview)\n * [Create managed application with custom provider](https://docs.microsoft.com/en-us/azure/managed-applications/tutorial-create-managed-app-with-custom-provider?tabs=azurecli-interactive)"
             }
