@@ -29,15 +29,25 @@ If you don't have an existing custom provider with logic deployed, you can deplo
 
 ![](images/customprovidertemplateparameters.png)
 
-The resulting deployment should consist of two parts: the custom provider infrastructure and the association resource. The custom provider infrastructure deploys the web connector to service now, logic app, and custom provider. The association triggers the custom provider to perform an action. In this sample, the action is creating a service now record.
+The resulting deployment should consist of two parts: the managed application service catalog definition and managed application instance with custom provider. The custom provider infrastructure deploys the web connector to service now, logic app, and custom provider.
 
-![](images/createdcustomprovider.png)
+![](images/createdmnagedapp.png)
+
+Once the sample is initially deployed, go to the resource of "Microsoft.Solutions/applications" type. The managed application has a custom resource provider with custom resource type ("Azure Subscription entries") and a custom provider associations ("Onboard storage accounts"). Also the application has a documentation page with information about Service Now, Azure Managed Applications and Azure Custom Providers.
+
+![](images/menuitems.png)
+
+In this sample, the custom resources is a *Proxy* to Service Now tickets with "Azure Subscription" type. Basic Create, Update and Delete operations enabled for resources of this type.
+
+![](images/customresources.png)
+
+The association triggers the custom provider to perform an action. In this sample, when the storage account is onboarded the triggered action is creating a service now record.
+
+![](images/createdassociationresource.png)
 
 ### Existing custom provider
 
 Once the sample is initially deployed, instead of recreating everything from scratch, it can just use an existing custom provider resource. When deploying with an existing custom provider resource, the "Custom Resource Provider Id" and "Association Name" are the only required fields. This will only deploy the "associations" resource.
-
-![](images/createdassociationresource.png)
 
 The outputs section of the template deployment also will display the created resource, which can be accessed through the *reference* template function.
 
