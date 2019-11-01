@@ -40,9 +40,11 @@ Once the sample is initially deployed, instead of recreating everything from scr
 ![](images/createdassociationresource.png)
 
 The outputs section of the template deployment also will display the created resource, which can be accessed through the *reference* template function.
+
 ![](images/customresourcetemplateoutput.png)
 
-In addition, you can navigate to the deployed Azure Logic App resource in the template resource group and check the *run history* tab to see the HTTP calls.
+In addition, you can navigate to the deployed Azure Logic App resource in the template resource group and check the *Runs history* tab to see the HTTP calls.
+
 ![](images/logicapprun.png)
 
 Additional "associations" can be created through deploying another Azure Resource Manager Template or directly interfacing with the Azure REST API.
