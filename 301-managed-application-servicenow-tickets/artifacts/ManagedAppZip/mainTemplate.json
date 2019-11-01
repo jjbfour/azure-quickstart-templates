@@ -97,14 +97,16 @@
                                 "authentication": {
                                     "type": "ManagedServiceIdentity"
                                 },
-                                "body": {},
+                                "body": {
+                                },
                                 "method": "POST",
                                 "queries": {
                                     "api-version": "2018-09-01-preview"
                                 },
                                 "uri": "https://management.azure.com/@{parameters('managedApplicationId')}/listTokens"
                             },
-                            "runAfter": {},
+                            "runAfter": {
+                            },
                             "type": "Http"
                         },
                         "Switch": {
@@ -122,7 +124,8 @@
                                                 },
                                                 "uri": "https://management.azure.com/@{triggerOutputs()['headers']?['x-ms-customproviders-extendedresource']}"
                                             },
-                                            "runAfter": {},
+                                            "runAfter": {
+                                            },
                                             "type": "Http"
                                         },
                                         "CreateTicket": {
@@ -194,7 +197,8 @@
                                             },
                                             "uri": "https://management.azure.com/@{triggerOutputs()['headers']?['x-ms-customproviders-extensionpath']}"
                                         },
-                                        "runAfter": {},
+                                        "runAfter": {
+                                        },
                                         "type": "Http"
                                     },
                                     "UpdateServiceNowRecord": {
@@ -214,7 +218,7 @@
                                                 "sysparm_exclude_reference_link": true
                                             }
                                         },
-                                        "runAfter": { 
+                                        "runAfter": {
                                             "GetAssociationResource": [
                                                 "Succeeded"
                                             ]
@@ -250,14 +254,16 @@
                             "type": "string"
                         },
                         "$connections": {
-                            "defaultValue": {},
+                            "defaultValue": {
+                            },
                             "type": "Object"
                         }
                     },
                     "triggers": {
                         "CustomProviderWebhook": {
                             "inputs": {
-                                "schema": {}
+                                "schema": {
+                                }
                             },
                             "kind": "Http",
                             "type": "Request"
@@ -295,8 +301,167 @@
                     "actions": {
                         "Switch": {
                             "cases": {
+                                "CreateCase": {
+                                    "actions": {
+                                        "CreateServiceNowTicket": {
+                                            "inputs": {
+                                                "body": {
+                                                    "category": "@{triggerBody()?['body']?['properties']?['category']}",
+                                                    "comments": "@{triggerBody()?.body?.properties?.status}",
+                                                    "correlation_id": "@{triggerOutputs()?['headers']?['x-ms-correlation-request-id']}",
+                                                    "install_status": "@{triggerBody().OperationType}",
+                                                    "name": "@{triggerBody()?.body?.properties?.displayName}",
+                                                    "short_description": "@{triggerBody()?.body?.properties?.description}"
+                                                },
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['service-now']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "post",
+                                                "path": "/api/now/v2/table/@{encodeURIComponent('cmdb_ci_azure_subscription')}",
+                                                "queries": {
+                                                    "sysparm_display_value": false,
+                                                    "sysparm_exclude_reference_link": true
+                                                }
+                                            },
+                                            "runAfter": {
+                                            },
+                                            "type": "ApiConnection"
+                                        },
+                                        "CreateTicketResponse": {
+                                            "inputs": {
+                                                "body": {
+                                                    "id": "@triggerOutputs()?['headers']?['x-ms-customproviders-requestpath']",
+                                                    "name": "@body('CreateServiceNowTicket')?['result']?['sys_id']",
+                                                    "properties": {
+                                                        "category": "@body('CreateServiceNowTicket')?['result']?['category']",
+                                                        "createdBy": "@body('CreateServiceNowTicket')?['result']?['sys_created_by']",
+                                                        "description": "@body('CreateServiceNowTicket')?['result']?['short_description']",
+                                                        "displayName": "@body('CreateServiceNowTicket')?['result']?['name']",
+                                                        "status": "@body('CreateServiceNowTicket')?['result']?['comments']",
+                                                        "updatedBy": "@body('CreateServiceNowTicket')?['result']?['sys_updated_by']"
+                                                    },
+                                                    "type": "@triggerBody().resourceType"
+                                                },
+                                                "statusCode": 200
+                                            },
+                                            "kind": "Http",
+                                            "runAfter": {
+                                                "CreateServiceNowTicket": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Response"
+                                        }
+                                    },
+                                    "case": "CREATE"
+                                },
+                                "DeleteCase": {
+                                    "actions": {
+                                        "DeleteServiceNowTicket": {
+                                            "inputs": {
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['service-now']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "delete",
+                                                "path": "/api/now/v2/table/@{encodeURIComponent('cmdb_ci_azure_subscription')}/@{encodeURIComponent(last(split(triggerBody().resourceName, '/')))}"
+                                            },
+                                            "runAfter": {
+                                            },
+                                            "type": "ApiConnection"
+                                        },
+                                        "DeleteTicketResponse": {
+                                            "inputs": {
+                                                "statusCode": 200
+                                            },
+                                            "kind": "Http",
+                                            "runAfter": {
+                                                "DeleteServiceNowTicket": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Response"
+                                        }
+                                    },
+                                    "case": "DELETE"
+                                },
+                                "GetCase": {
+                                    "actions": {
+                                        "GetServiceNowTicket": {
+                                            "inputs": {
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['service-now']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "get",
+                                                "path": "/api/now/v2/table/@{encodeURIComponent('cmdb_ci_azure_subscription')}/@{encodeURIComponent(last(split(triggerBody().resourceName, '/')))}",
+                                                "queries": {
+                                                    "sysparm_display_value": false,
+                                                    "sysparm_exclude_reference_link": true
+                                                }
+                                            },
+                                            "runAfter": {
+                                            },
+                                            "type": "ApiConnection"
+                                        },
+                                        "GetTicketResponse": {
+                                            "inputs": {
+                                                "body": {
+                                                    "id": "@triggerOutputs()?['headers']?['x-ms-customproviders-requestpath']",
+                                                    "name": "@body('GetServiceNowTicket')?['result']?['sys_id']",
+                                                    "properties": {
+                                                        "category": "@body('GetServiceNowTicket')?['result']?['category']",
+                                                        "createdBy": "@body('GetServiceNowTicket')?['result']?['sys_created_by']",
+                                                        "description": "@body('GetServiceNowTicket')?['result']?['short_description']",
+                                                        "displayName": "@body('GetServiceNowTicket')?['result']?['name']",
+                                                        "status": "@body('GetServiceNowTicket')?['result']?['comments']",
+                                                        "updatedBy": "@body('GetServiceNowTicket')?['result']?['sys_updated_by']"
+                                                    },
+                                                    "type": "@triggerBody().resourceType"
+                                                },
+                                                "statusCode": 200
+                                            },
+                                            "kind": "Http",
+                                            "runAfter": {
+                                                "GetServiceNowTicket": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Response"
+                                        }
+                                    },
+                                    "case": "GET"
+                                },
                                 "ListCase": {
                                     "actions": {
+                                        "ConvertToAzureREST": {
+                                            "inputs": {
+                                                "from": "@body('ListServiceNowTickets')?['result']",
+                                                "select": {
+                                                    "id": "@concat(triggerOutputs()?['headers']?['x-ms-customproviders-requestpath'], '/', item()?['sys_id'])",
+                                                    "name": "@item()?['sys_id']",
+                                                    "properties": {
+                                                        "category": "@item()?['category']",
+                                                        "createdBy": "@item()?['sys_created_by']",
+                                                        "description": "@item()?['short_description']",
+                                                        "displayName": "@item()?['name']",
+                                                        "status": "@item()?['comments']",
+                                                        "updatedBy": "@item()?['sys_updated_by']"
+                                                    },
+                                                    "type": "@triggerBody()['resourceType']"
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "ListServiceNowTickets": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Select"
+                                        },
                                         "ListServiceNowTickets": {
                                             "inputs": {
                                                 "host": {
@@ -311,31 +476,9 @@
                                                     "sysparm_exclude_reference_link": true
                                                 }
                                             },
-                                            "runAfter": {},
-                                            "type": "ApiConnection"
-                                        },
-                                        "ConvertToAzureREST": {
-                                            "inputs": {
-                                                "from": "@body('ListServiceNowTickets')?['result']",
-                                                "select": {
-                                                    "name": "@item()?['sys_id']",
-                                                    "properties": {
-                                                        "description": "@item()?['short_description']",
-                                                        "displayName": "@item()?['name']",
-                                                        "createdBy": "@item()?['sys_created_by']",
-                                                        "updatedBy": "@item()?['sys_updated_by']",
-                                                        "category": "@item()?['category']"
-                                                    },
-                                                    "type": "@triggerBody().resourceType",
-                                                    "id": "@concat(triggerOutputs()?['headers']?['x-ms-customproviders-requestpath'], item()?['sys_id'])"
-                                                }
-                                            },
                                             "runAfter": {
-                                                "ListServiceNowTickets": [
-                                                    "Succeeded"
-                                                ]
                                             },
-                                            "type": "Select"
+                                            "type": "ApiConnection"
                                         },
                                         "ListTicketsResponse": {
                                             "inputs": {
@@ -355,17 +498,32 @@
                                     },
                                     "case": "LIST"
                                 },
-                                "GetCase": {
+                                "PostCase": {
                                     "actions": {
-                                        "GetServiceNowTicket": {
+                                        "Response": {
                                             "inputs": {
+                                                "statusCode": 200
+                                            },
+                                            "kind": "Http",
+                                            "runAfter": {
+                                                "UpdateServiceNowTicketStatus": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "Response"
+                                        },
+                                        "UpdateServiceNowTicketStatus": {
+                                            "inputs": {
+                                                "body": {
+                                                    "comments": "Completed"
+                                                },
                                                 "host": {
                                                     "connection": {
                                                         "name": "@parameters('$connections')['service-now']['connectionId']"
                                                     }
                                                 },
-                                                "method": "get",
-                                                "path": "/api/now/v2/table/@{encodeURIComponent('cmdb_ci_azure_subscription')}/@{encodeURIComponent(last(split(triggerBody().resourceName, '/')))}",
+                                                "method": "put",
+                                                "path": "/api/now/v2/table/@{encodeURIComponent('cmdb_ci_azure_subscription')}/@{encodeURIComponent(last(split(replace(triggerBody().resourceName, '/updateStatus', ''), '/')))}",
                                                 "queries": {
                                                     "sysparm_display_value": false,
                                                     "sysparm_exclude_reference_link": true
@@ -373,116 +531,9 @@
                                             },
                                             "runAfter": {},
                                             "type": "ApiConnection"
-                                        },
-                                        "GetTicketResponse": {
-                                            "inputs": {
-                                                "body": {
-                                                    "name": "@body('GetServiceNowTicket')?['result']?['sys_id']",
-                                                    "properties": {
-                                                        "description": "@body('GetServiceNowTicket')?['result']?['short_description']",
-                                                        "displayName": "@body('GetServiceNowTicket')?['result']?['name']",
-                                                        "createdBy": "@body('GetServiceNowTicket')?['result']?['sys_created_by']",
-                                                        "updatedBy": "@body('GetServiceNowTicket')?['result']?['sys_updated_by']",
-                                                        "category": "@body('GetServiceNowTicket')?['result']?['category']"
-                                                    },
-                                                    "type": "@triggerBody().resourceType",
-                                                    "id": "@triggerOutputs()?['headers']?['x-ms-customproviders-requestpath']"
-                                                },
-                                                "statusCode": 200
-                                            },
-                                            "kind": "Http",
-                                            "runAfter": {
-                                                "GetServiceNowTicket": [
-                                                    "Succeeded"
-                                                ]
-                                            },
-                                            "type": "Response"
                                         }
                                     },
-                                    "case": "GET"
-                                },
-                                "DeleteCase": {
-                                    "actions": {
-                                        "DeleteServiceNowTicket": {
-                                            "inputs": {
-                                                "host": {
-                                                    "connection": {
-                                                        "name": "@parameters('$connections')['service-now']['connectionId']"
-                                                    }
-                                                },
-                                                "method": "delete",
-                                                "path": "/api/now/v2/table/@{encodeURIComponent('cmdb_ci_azure_subscription')}/@{encodeURIComponent(last(split(triggerBody().resourceName, '/')))}"
-                                            },
-                                            "runAfter": {},
-                                            "type": "ApiConnection"
-                                        },
-                                        "DeleteTicketResponse": {
-                                            "inputs": {
-                                                "statusCode": 200
-                                            },
-                                            "kind": "Http",
-                                            "runAfter": {
-                                                "DeleteServiceNowTicket": [
-                                                    "Succeeded"
-                                                ]
-                                            },
-                                            "type": "Response"
-                                        }
-                                    },
-                                    "case": "DELETE"
-                                },
-                                "CreateCase": {
-                                    "actions": {
-                                        "CreateServiceNowTicket": {
-                                            "inputs": {
-                                                "body": {
-                                                    "correlation_id": "@{triggerOutputs()?['headers']?['x-ms-correlation-request-id']}",
-                                                    "install_status": "@{triggerBody().OperationType}",
-                                                    "name": "@{triggerBody()?.body?.properties?.displayName}",
-                                                    "short_description": "@{triggerBody()?.body?.properties?.description}",
-                                                    "category": "@{triggerBody()?.body?.properties?.category}"
-                                                },
-                                                "host": {
-                                                    "connection": {
-                                                        "name": "@parameters('$connections')['service-now']['connectionId']"
-                                                    }
-                                                },
-                                                "method": "post",
-                                                "path": "/api/now/v2/table/@{encodeURIComponent('cmdb_ci_infra_service')}",
-                                                "queries": {
-                                                    "sysparm_display_value": false,
-                                                    "sysparm_exclude_reference_link": true
-                                                }
-                                            },
-                                            "runAfter": {},
-                                            "type": "ApiConnection"
-                                        },
-                                        "CreateTicketResponse": {
-                                            "inputs": {
-                                                "body": {
-                                                    "name": "@body('CreateServiceNowTicket')?['result']?['sys_id']",
-                                                    "properties": {
-                                                        "description": "@body('CreateServiceNowTicket')?['result']?['short_description']",
-                                                        "displayName": "@body('CreateServiceNowTicket')?['result']?['name']",
-                                                        "createdBy": "@body('CreateServiceNowTicket')?['result']?['sys_created_by']",
-                                                        "updatedBy": "@body('CreateServiceNowTicket')?['result']?['sys_updated_by']",
-                                                        "category": "@body('CreateServiceNowTicket')?['result']?['category']"
-                                                    },
-                                                    "type": "@triggerBody().resourceType",
-                                                    "id": "@triggerOutputs()?['headers']?['x-ms-customproviders-requestpath']"
-                                                },
-                                                "statusCode": 200
-                                            },
-                                            "kind": "Http",
-                                            "runAfter": {
-                                                "CreateServiceNowTicket": [
-                                                    "Succeeded"
-                                                ]
-                                            },
-                                            "type": "Response"
-                                        }
-                                    },
-                                    "case": "CREATE"
+                                    "case": "TRIGGER"
                                 }
                             },
                             "default": {
@@ -492,26 +543,30 @@
                                             "statusCode": 200
                                         },
                                         "kind": "Http",
-                                        "runAfter": {},
+                                        "runAfter": {
+                                        },
                                         "type": "Response"
                                     }
                                 }
                             },
                             "expression": "@triggerBody().operationType",
-                            "runAfter": {},
+                            "runAfter": {
+                            },
                             "type": "Switch"
                         }
                     },
                     "parameters": {
                         "$connections": {
-                            "defaultValue": {},
+                            "defaultValue": {
+                            },
                             "type": "Object"
                         }
                     },
                     "triggers": {
                         "CustomProviderWebhook": {
                             "inputs": {
-                                "schema": {}
+                                "schema": {
+                                }
                             },
                             "kind": "Http",
                             "type": "Request"
@@ -553,6 +608,14 @@
                         "routingType": "Webhook",
                         "endpoint": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', parameters('serviceTicketsLogicAppName')), '/triggers/CustomProviderWebhook'), '2017-07-01').value]"
                     }
+                ],
+                "actions": [
+					{
+						"name": "tickets/updateStatus",
+                        "mode": "Secure",
+                        "routingType": "Webhook",
+                        "endpoint": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', parameters('serviceTicketsLogicAppName')), '/triggers/CustomProviderWebhook'), '2017-07-01').value]"
+					}
                 ]
             }
         },
@@ -586,5 +649,6 @@
             ]
         }
     ],
-    "outputs": {}
+    "outputs": {
+    }
 }

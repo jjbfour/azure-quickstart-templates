@@ -13,7 +13,111 @@
                 "displayName": "Tickets",
                 "version": "1.0.0",
                 "resourceType": "tickets",
-                "createUIDefinition": null,
+                "commands": [
+                    {
+                        "displayName": "Mark ticket as done",
+                        "path": "updateStatus"
+                    }
+                ],
+                "createUIDefinition": {
+                    "parameters": {
+                        "steps": [
+                            {
+                                "name": "serviceNowTicket",
+                                "label": "Create Service Now ticket",
+                                "subLabel": {
+                                        "preValidation": "Create ticket",
+                                        "postValidation": "Done"
+                                },
+                                "bladeTitle": "Create Service Now ticket",
+                                "elements": [
+                                        {
+                                                "name": "displayName",
+                                                "type": "Microsoft.Common.TextBox",
+                                                "label": "Display name",
+                                                "defaultValue": "",
+                                                "toolTip": "",
+                                                "constraints": {
+                                                        "required": true
+                                                }
+                                        },
+                                        {
+                                                "name": "category",
+                                                "type": "Microsoft.Common.DropDown",
+                                                "label": "Category",
+                                                "defaultValue": "",
+                                                "toolTip": "",
+                                                "constraints": {
+                                                    "allowedValues": [
+                                                        {
+                                                            "label": "General",
+                                                            "value": "General"
+                                                        },
+                                                        {
+                                                            "label": "Informational",
+                                                            "value": "Informational"
+                                                        },
+                                                        {
+                                                            "label": "Error",
+                                                            "value": "Error"
+                                                        },
+                                                        {
+                                                            "label": "Warning",
+                                                            "value": "Warning"
+                                                        }
+                                                    ],
+                                                    "required": true
+                                                }
+                                        },
+                                        {
+                                                "name": "status",
+                                                "type": "Microsoft.Common.DropDown",
+                                                "label": "Status",
+                                                "defaultValue": "",
+                                                "toolTip": "",
+                                                "constraints": {
+                                                    "allowedValues": [
+                                                        {
+                                                            "label": "Created",
+                                                            "value": "Created"
+                                                        },
+                                                        {
+                                                            "label": "Accepted",
+                                                            "value": "Accepted"
+                                                        },
+                                                        {
+                                                            "label": "In Progress",
+                                                            "value": "In Progress"
+                                                        },
+                                                        {
+                                                            "label": "Completed",
+                                                            "value": "Completed"
+                                                        }
+                                                    ],
+                                                    "required": true
+                                                }
+                                        },
+                                        {
+                                                "name": "description",
+                                                "type": "Microsoft.Common.TextBox",
+                                                "label": "Description",
+                                                "defaultValue": "",
+                                                "toolTip": "",
+                                                "constraints": {
+                                                        "required": true
+                                                }
+                                        }
+                                ]
+                            }
+                        ],
+                        "outputs": {
+                                "displayName": "[steps('serviceNowTicket').displayName]",
+                                "category": "[steps('serviceNowTicket').category]",
+                                "description": "[steps('serviceNowTicket').description]",
+                                "status": "[steps('serviceNowTicket').status]"
+                        }
+                    }
+                },
                 "columns": [
                     {
                         "key": "properties.displayName",
@@ -22,6 +126,10 @@
                     {
                         "key": "properties.category",
                         "displayName": "Category"
+                    },
+                    {
+                        "key": "properties.status",
+                        "displayName": "Status"
                     },
                     {
                         "key": "properties.description",
