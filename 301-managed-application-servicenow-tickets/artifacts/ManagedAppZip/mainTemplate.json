@@ -540,6 +540,12 @@
             "name": "public",
             "location": "[parameters('location')]",
             "properties": {
+                "validations": [
+                    {
+                        "validationType": "Swagger",
+                        "specification": "https://raw.githubusercontent.com/jjbfour/azure-quickstart-templates/swagger/301-managed-application-servicenow-tickets/artifacts/Swagger/customProviderSwagger.json"
+                    }
+                ],
                 "resourceTypes": [
                     {
                         "name": "associations",
